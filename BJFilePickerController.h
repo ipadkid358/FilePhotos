@@ -9,5 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface BJFilePickerController : UITableViewController
-@property (nonatomic, strong) NSString *currentPath;
+
+@property (nonatomic) NSString *currentPath;
+
 @end

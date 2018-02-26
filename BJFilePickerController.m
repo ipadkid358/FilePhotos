@@ -7,42 +7,43 @@
 //
 
 #import "BJFilePickerController.h"
+#import "BJImageWrapper.h"
+
+#define kCellIdentifier @"Cell"
 
 @implementation BJFilePickerController {
     NSArray *filesAtPath;
-    NSInteger filesCount;
 }
-
-static NSString *cellIdentifier = @"Cell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    if (!self.currentPath) self.currentPath = @"/";
-    filesAtPath = [NSFileManager.defaultManager contentsOfDirectoryAtPath:self.currentPath error:NULL];
-    filesCount = filesAtPath.count;
-    self.navigationItem.title = self.currentPath.lastPathComponent;
-    [self.tableView registerClass:UITableViewCell.class forCellReuseIdentifier:cellIdentifier];
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    if (!_currentPath) {
+        _currentPath = @"/";
+    }
+    
+    filesAtPath = [NSFileManager.defaultManager contentsOfDirectoryAtPath:_currentPath error:NULL];
+    
+    self.navigationItem.title = _currentPath.lastPathComponent;
+    
+    [self.tableView registerClass:UITableViewCell.class forCellReuseIdentifier:kCellIdentifier];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return filesCount;
+    return filesAtPath.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *dirObject = filesAtPath[indexPath.row];
     NSString *fullPath = [self.currentPath stringByAppendingPathComponent:dirObject];
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
     cell.textLabel.text = dirObject;
     
     BOOL isDir;
     [NSFileManager.defaultManager fileExistsAtPath:fullPath isDirectory:&isDir];
-    cell.accessoryType = isDir ? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;    
+    cell.accessoryType = isDir ? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
+    
     return cell;
 }
 
@@ -56,6 +57,22 @@ static NSString *cellIdentifier = @"Cell";
         BJFilePickerController *newViewController = [BJFilePickerController new];
         newViewController.currentPath = fullPath;
         [self.navigationController pushViewController:newViewController animated:YES];
+    } else {
+        UIImagePickerController *imagePicker = (UIImagePickerController *)self.parentViewController;
+        id<UIImagePickerControllerDelegate> imagePickerDelegate = imagePicker.delegate;
+        
+        if ([imagePickerDelegate respondsToSelector:@selector(imagePickerController:didFinishPickingMediaWithInfo:)]) {
+            NSURL *returningURL = [NSURL fileURLWithPath:fullPath];
+            NSDictionary<NSString *, id> *info;
+            
+            UIImage *imageRet = [UIImage imageWithContentsOfFile:fullPath];
+            info = @{
+                     UIImagePickerControllerMediaType: (imageRet ? @"public.image" : @"public.file"),
+                     UIImagePickerControllerOriginalImage: (imageRet ?: [BJImageWrapper wrapperWithFile:fullPath]),
+                     UIImagePickerControllerReferenceURL: returningURL
+                     };
+            [imagePickerDelegate imagePickerController:imagePicker didFinishPickingMediaWithInfo:info];
+        }
     }
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
