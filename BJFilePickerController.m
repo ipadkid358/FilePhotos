@@ -68,7 +68,7 @@
             UIImage *imageRet = [UIImage imageWithContentsOfFile:fullPath];
             info = @{
                      UIImagePickerControllerMediaType: (imageRet ? @"public.image" : @"public.file"),
-                     UIImagePickerControllerOriginalImage: (imageRet ?: [BJImageWrapper wrapperWithFile:fullPath]),
+                     UIImagePickerControllerOriginalImage: (imageRet ?: [BJImageWrapper wrapperWithURL:returningURL]),
                      UIImagePickerControllerReferenceURL: returningURL
                      };
             [imagePickerDelegate imagePickerController:imagePicker didFinishPickingMediaWithInfo:info];

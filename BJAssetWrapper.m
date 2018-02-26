@@ -1,14 +1,14 @@
 //
-//  BJImageWrapper.m
+//  BJAssetWrapper.m
 //  FilePhotos
 //
-//  Created by ipad_kid on 2/24/18.
+//  Created by ipad_kid on 2/26/18.
 //  Copyright © 2017 BlackJacket. All rights reserved.
 //
 
-#import "BJImageWrapper.h"
+#import "BJAssetWrapper.h"
 
-@implementation BJImageWrapper
+@implementation BJAssetWrapper
 
 - (instancetype)initWithURL:(NSURL *)url {
     if (self = [self init]) {
@@ -18,7 +18,7 @@
     return self;
 }
 
-+ (instancetype)wrapperWithURL:(NSURL *)url {
++ (instancetype)assetWithURL:(NSURL *)url {
     return [[self alloc] initWithURL:url];
 }
 
