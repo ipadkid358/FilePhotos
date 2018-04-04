@@ -10,20 +10,20 @@
 
 @implementation BJAssetWrapper
 
-- (instancetype)initWithURL:(NSURL *)url {
+- (instancetype)initWithPath:(NSString *)path {
     if (self = [self init]) {
-        _realWrapped = url;
+        _realWrapped = path;
     }
     
     return self;
 }
 
-+ (instancetype)assetWithURL:(NSURL *)url {
-    return [[self alloc] initWithURL:url];
++ (instancetype)assetWithPath:(NSString *)path {
+    return [[self alloc] initWithPath:path];
 }
 
 - (NSData *)realData {
-    return [NSData dataWithContentsOfURL:_realWrapped];
+    return [NSData dataWithContentsOfFile:_realWrapped];
 }
 
 @end

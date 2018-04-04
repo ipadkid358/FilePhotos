@@ -10,27 +10,27 @@
 #import "BJAssetWrapper.h"
 
 @implementation BJFetchResultWrapper {
-    BJAssetWrapper *realObject;
+    BJAssetWrapper *_realObject;
 }
 
-- (instancetype)initWithURL:(NSURL *)url {
+- (instancetype)initWithPath:(NSString *)path {
     if (self = [self init]) {
-        realObject = [BJAssetWrapper assetWithURL:url];
+        _realObject = [BJAssetWrapper assetWithPath:path];
     }
     
     return self;
 }
 
-+ (instancetype)resultWithURL:(NSURL *)url {
-    return [[self alloc] initWithURL:url];
++ (instancetype)resultWithPath:(NSString *)path {
+    return [[self alloc] initWithPath:path];
 }
 
 - (id)firstObject {
-    return realObject;
+    return _realObject;
 }
 
 - (id)lastObject {
-    return realObject;
+    return _realObject;
 }
 
 - (NSUInteger)count {
@@ -39,7 +39,7 @@
 
 - (id)objectAtIndex:(NSUInteger)index {
     if (index == 1) {
-        return realObject;
+        return _realObject;
     }
     
     return NULL;
@@ -47,7 +47,7 @@
 
 - (id)objectAtIndexedSubscript:(NSUInteger)idx {
     if (idx == 1) {
-        return realObject;
+        return _realObject;
     }
     
     return NULL;

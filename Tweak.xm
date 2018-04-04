@@ -33,10 +33,10 @@
     if (assetURLs.count == 1) {
         NSURL *target = assetURLs.firstObject;
         if ([target.scheme isEqualToString:@"file"]) {
-            return [BJFetchResultWrapper resultWithURL:target];
+            return [BJFetchResultWrapper resultWithPath:target.path];
         }
     }
-
+    
     return %orig;
 }
 
@@ -48,19 +48,19 @@
 // PHAsset to UIImage
 - (PHImageRequestID)requestImageForAsset:(BJAssetWrapper *)asset targetSize:(CGSize)targetSize contentMode:(PHImageContentMode)contentMode options:(PHImageRequestOptions *)options resultHandler:(void (^)(UIImage *result, NSDictionary *info))resultHandler {
     if ([asset isKindOfClass:BJAssetWrapper.class]) {
-        NSURL *fileURL = asset.realWrapped;
-        BJImageWrapper *fakeImage = [BJImageWrapper wrapperWithURL:fileURL];
+        NSString *filePath = asset.realWrapped;
+        BJImageWrapper *fakeImage = [BJImageWrapper wrapperWithPath:filePath];
         
         NSDictionary *returnInfo = @{
-            @"PHImageFileURLKey" : fileURL,
-            @"PHImageResultIsPlaceholderKey" : [NSNumber numberWithBool:NO],
-            @"PHImageResultOptimizedForSharing" : [NSNumber numberWithBool:YES],
-            
-            // required keys
-            PHImageResultIsDegradedKey : [NSNumber numberWithBool:NO],
-            PHImageResultIsInCloudKey : [NSNumber numberWithBool:NO],
-            PHImageResultRequestIDKey : [NSNumber numberWithInteger:0]
-        };
+             @"PHImageFileURLKey" : [NSURL fileURLWithPath:filePath],
+             @"PHImageResultIsPlaceholderKey" : @NO,
+             @"PHImageResultOptimizedForSharing" : @YES,
+             
+             // required keys
+             PHImageResultIsDegradedKey : @NO,
+             PHImageResultIsInCloudKey : @NO,
+             PHImageResultRequestIDKey : @(0)
+         };
         
         resultHandler(fakeImage, returnInfo);
         return 0;
@@ -72,22 +72,23 @@
 // PHAsset to NSData
 - (PHImageRequestID)requestImageDataForAsset:(BJAssetWrapper *)asset options:(PHImageRequestOptions *)options resultHandler:(void(^)(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info))resultHandler {
     if ([asset isKindOfClass:BJAssetWrapper.class]) {
-        NSString *utiKey = @"public.file";
+        // https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html
+        NSString *utiKey = @"public.data";
         UIImageOrientation orientationKey = 0;
         
         NSDictionary *returnInfo = @{
-            @"PHImageFileURLKey" : asset.realWrapped,
-            @"PHImageResultIsPlaceholderKey" : [NSNumber numberWithBool:NO],
-            @"PHImageResultOptimizedForSharing" : [NSNumber numberWithBool:YES],
-            
-            // data specific
-            @"PHImageFileOrientationKey" : [NSNumber numberWithInteger:orientationKey],
-            @"PHImageFileUTIKey" : utiKey,
-            
-            // required keys
-            PHImageResultIsDegradedKey : [NSNumber numberWithBool:NO],
-            PHImageResultIsInCloudKey : [NSNumber numberWithBool:NO],
-            PHImageResultRequestIDKey : [NSNumber numberWithInteger:0]
+             @"PHImageFileURLKey" : [NSURL fileURLWithPath:asset.realWrapped],
+             @"PHImageResultIsPlaceholderKey" : @NO,
+             @"PHImageResultOptimizedForSharing" : @YES,
+             
+             // data specific
+             @"PHImageFileOrientationKey" : @(orientationKey),
+             @"PHImageFileUTIKey" : utiKey,
+             
+             // required keys
+             PHImageResultIsDegradedKey : @NO,
+             PHImageResultIsInCloudKey : @NO,
+             PHImageResultRequestIDKey : @(0)
         };
         
         resultHandler(asset.realData, utiKey, orientationKey, returnInfo);
@@ -108,10 +109,12 @@
     return %orig;
 }
 
-%hookf(NSData *, UIImageJPEGRepresentation, BJImageWrapper *image, CGFloat compressionQuality) {
-    if ([image isKindOfClass:BJImageWrapper.class]) {
-        return image.realData;
-    }
-    
-    return %orig;
-}
+// This hook currently results in SpringBoard failing to load
+// %hookf(NSData *, UIImageJPEGRepresentation, BJImageWrapper *image, CGFloat compressionQuality) {
+//     if ([image isKindOfClass:BJImageWrapper.class]) {
+//         return image.realData;
+//     }
+//
+//     return %orig;
+// }
+

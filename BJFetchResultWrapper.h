@@ -11,6 +11,6 @@
 
 @interface BJFetchResultWrapper<ObjectType> : PHFetchResult
 
-+ (instancetype)resultWithURL:(NSURL *)url;
++ (instancetype)resultWithPath:(NSString *)path;
 
 @end

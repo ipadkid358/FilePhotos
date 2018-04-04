@@ -10,20 +10,20 @@
 
 @implementation BJImageWrapper
 
-- (instancetype)initWithURL:(NSURL *)url {
+- (instancetype)initWithPath:(NSString *)path {
     if (self = [self init]) {
-        _realWrapped = url;
+        _realWrapped = path;
     }
     
     return self;
 }
 
-+ (instancetype)wrapperWithURL:(NSURL *)url {
-    return [[self alloc] initWithURL:url];
++ (instancetype)wrapperWithPath:(NSString *)path {
+    return [[self alloc] initWithPath:path];
 }
 
 - (NSData *)realData {
-    return [NSData dataWithContentsOfURL:_realWrapped];
+    return [NSData dataWithContentsOfFile:_realWrapped];
 }
 
 @end

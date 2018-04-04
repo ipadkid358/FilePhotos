@@ -10,9 +10,9 @@
 
 @interface BJImageWrapper : UIImage
 
-@property (nonatomic, readonly) NSURL *realWrapped;
+@property (nonatomic, readonly) NSString *realWrapped;
 
-+ (instancetype)wrapperWithURL:(NSURL *)url;
++ (instancetype)wrapperWithPath:(NSString *)path;
 - (NSData *)realData;
 
 @end

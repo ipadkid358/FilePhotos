@@ -11,9 +11,9 @@
 
 @interface BJAssetWrapper : PHAsset
 
-@property (nonatomic, readonly) NSURL *realWrapped;
+@property (nonatomic, readonly) NSString *realWrapped;
 
-+ (instancetype)assetWithURL:(NSURL *)url;
++ (instancetype)assetWithPath:(NSString *)path;
 - (NSData *)realData;
 
 @end
